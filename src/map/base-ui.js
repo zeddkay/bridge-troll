@@ -3,10 +3,11 @@
 const log = require('../log');
 const svgMarker = require('../svg-marker');
 
+const lighting = require('./lighting');
+
 const leaflet = require('leaflet');
 const EventEmitter = require('events').EventEmitter;
 
-const tileUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
 const attribution =
   '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
@@ -23,14 +24,17 @@ class BaseUI extends EventEmitter {
   }
 
   init(lat, lng) {
+  
     let mapEl = document.createElement('div');
     mapEl.id = 'map';
     document.body.appendChild(mapEl);
 
     // http://leafletjs.com/reference-1.3.0.html#map
     let map = (this.map = leaflet.map(mapEl, this.options));
+    let tileUrl = lighting.setLighting(lat, lng);
     leaflet.tileLayer(tileUrl, { attribution }).addTo(map);
     map.setView([lat, lng], defaultZoomLevel);
+
 
     // http://leafletjs.com/reference-1.3.0.html#map-event
     let onMapChange = () => this.emit('update', map.getBounds());
@@ -38,13 +42,22 @@ class BaseUI extends EventEmitter {
     map.on('moveend', onMapChange);
 
     // Show a marker at our current location
-    this.currentLocationMarker = leaflet
+   if (lighting.getNightMode() == 'true') {
+      this.currentLocationMarker = leaflet
+      .marker([lat, lng], {
+        title: 'Current Location',
+        icon: svgMarker.location_white
+      })
+      .addTo(map); 
+    } else {
+      this.currentLocationMarker = leaflet
       .marker([lat, lng], {
         title: 'Current Location',
         icon: svgMarker.location
       })
       .addTo(map);
-
+    }
+    
     log.info(`Map initialized with centre lat=${lat}, lng=${lng}`);
   }
 
