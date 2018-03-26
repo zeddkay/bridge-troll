@@ -24,7 +24,6 @@ class BaseUI extends EventEmitter {
   }
 
   init(lat, lng) {
-  
     let mapEl = document.createElement('div');
     mapEl.id = 'map';
     document.body.appendChild(mapEl);
@@ -35,29 +34,29 @@ class BaseUI extends EventEmitter {
     leaflet.tileLayer(tileUrl, { attribution }).addTo(map);
     map.setView([lat, lng], defaultZoomLevel);
 
-
     // http://leafletjs.com/reference-1.3.0.html#map-event
     let onMapChange = () => this.emit('update', map.getBounds());
     map.on('viewreset', onMapChange);
     map.on('moveend', onMapChange);
 
+    //var nightMode = lighting.getNightMode();
     // Show a marker at our current location
-   if (lighting.getNightMode() == 'true') {
+    if (lighting.getNightMode() == 'true') {
       this.currentLocationMarker = leaflet
-      .marker([lat, lng], {
-        title: 'Current Location',
-        icon: svgMarker.location_white
-      })
-      .addTo(map); 
+        .marker([lat, lng], {
+          title: 'Current Location',
+          icon: svgMarker.location_white
+        })
+        .addTo(map);
     } else {
       this.currentLocationMarker = leaflet
-      .marker([lat, lng], {
-        title: 'Current Location',
-        icon: svgMarker.location
-      })
-      .addTo(map);
+        .marker([lat, lng], {
+          title: 'Current Location',
+          icon: svgMarker.location
+        })
+        .addTo(map);
     }
-    
+
     log.info(`Map initialized with centre lat=${lat}, lng=${lng}`);
   }
 

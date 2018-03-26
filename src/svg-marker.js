@@ -47,4 +47,3 @@ module.exports.unlocked_white = leaflet.icon({
   iconUrl: unlockedSvgUrlWhite,
   iconSize
 });
-

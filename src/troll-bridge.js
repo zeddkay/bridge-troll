@@ -5,6 +5,8 @@ const log = require('./log');
 const map = require('./map');
 const svgMarker = require('./svg-marker');
 const db = require('./db');
+const lighting = require('./map/lighting');
+//const base = require('../src/BaseUI');
 
 /**
  * A decorated Bridge type, with extra behaviour for interacting on the map.
@@ -70,9 +72,17 @@ class TrollBridge extends Bridge {
       .get(bridge.idbKey)
       .then(val => {
         if (val) {
-          addMarker(svgMarker.unlocked);
+          if (lighting.getNightMode() == 'true') {
+            addMarker(svgMarker.unlocked_white);
+          } else {
+            addMarker(svgMarker.unlocked);
+          }
         } else {
-          addMarker(svgMarker.locked);
+          if (lighting.getNightMode() == 'true') {
+            addMarker(svgMarker.locked_white);
+          } else {
+            addMarker(svgMarker.locked);
+          }
         }
         callback(null);
       })
